@@ -64,8 +64,8 @@ export function Quiz({ questions }: QuizProps) {
         {submitted && (
           <Alert className="border-accent bg-accent/10">
             <Trophy className="h-5 w-5 text-accent-foreground" />
-            <AlertTitle className="font-headline text-accent-foreground">Quiz Complete!</AlertTitle>
-            <AlertDescription className="text-accent-foreground/90">
+            <AlertTitle className="font-headline text-black">Quiz Complete!</AlertTitle>
+            <AlertDescription className="text-black/90">
               You scored {score} out of {questions.length}.
               <Progress value={scorePercentage} className="mt-2 h-2" />
             </AlertDescription>
