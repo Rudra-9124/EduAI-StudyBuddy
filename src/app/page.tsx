@@ -1,5 +1,5 @@
 'use client';
-
+import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +11,7 @@ import { BookOpen, BrainCircuit, FileText, HelpCircle, Lightbulb, Loader2, Pilcr
 import type { GenerateQuizQuestionsOutput } from '@/ai/flows/generate-quiz-questions';
 import { Quiz } from '@/components/quiz';
 import { generateStudyAids } from '@/app/actions';
+import logo from '@/app/favicon.ico';
 
 type StudyAids = {
   summary: string;
@@ -53,7 +54,8 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="p-4 border-b">
         <div className="container mx-auto flex items-center gap-4">
-          <BrainCircuit className="h-8 w-8 text-primary" />
+          {/* <BrainCircuit className="h-8 w-8 text-primary" /> */}
+          <Image src={logo} alt="Logo" width={40} height={40} />
           <h1 className="text-2xl font-bold tracking-tight">EduAI StudyBuddy</h1>
         </div>
       </header>
@@ -131,7 +133,8 @@ export default function Home() {
              {!isLoading && !results && !error && (
                <Card className="shadow-lg flex flex-col items-center justify-center min-h-[400px] text-center p-8">
                   <div className="p-4 bg-secondary rounded-full mb-4">
-                     <BrainCircuit className="h-12 w-12 text-primary" />
+                     {/* <BrainCircuit className="h-12 w-12 text-primary" /> */}
+                     <Image src={logo} alt="Logo" width={100} height={100} />
                   </div>
                   <h2 className="text-xl font-bold">Your Study Aids Appear Here</h2>
                   <p className="text-muted-foreground mt-2">
