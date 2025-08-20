@@ -7,7 +7,26 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BookOpen, BrainCircuit, FileText, HelpCircle, Lightbulb, Loader2, Pilcrow, Terminal } from 'lucide-react';
+import { 
+  BookOpen, 
+  BrainCircuit, 
+  FileText, 
+  HelpCircle, 
+  Lightbulb, 
+  Loader2, 
+  Pilcrow, 
+  Terminal,
+  Sparkles,
+  Zap,
+  Star,
+  ArrowRight,
+  CheckCircle,
+  UploadCloud,
+  Target,        
+  TrendingUp,    
+  Brain,         
+  Bookmark,
+} from 'lucide-react';
 import type { GenerateQuizQuestionsOutput } from '@/ai/flows/generate-quiz-questions';
 import { Quiz } from '@/components/quiz';
 import { generateStudyAids } from '@/app/actions';
@@ -16,6 +35,14 @@ import logo from '@/app/favicon.ico';
 type StudyAids = {
   summary: string;
   quiz: GenerateQuizQuestionsOutput['questions'];
+};
+
+const parseSummaryBullets = (summary: string) => {
+  return summary
+    .split('\n')
+    .filter(line => line.trim())
+    .map(line => line.replace(/^[•\-\*]\s*/, '').trim())
+    .filter(line => line.length > 0);
 };
 
 export default function Home() {
@@ -51,97 +78,241 @@ export default function Home() {
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="p-4 border-b">
-        <div className="container mx-auto flex items-center gap-4">
-          {/* <BrainCircuit className="h-8 w-8 text-primary" /> */}
-          <Image src={logo} alt="Logo" width={40} height={40} />
-          <h1 className="text-2xl font-bold tracking-tight">EduAI StudyBuddy</h1>
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-indigo-50 to-cyan-50 dark:from-gray-900 dark:via-purple-900 dark:to-violet-900">
+      {/* Header with glassmorphism effect */}
+      <header className="relative backdrop-blur-md bg-white/30 border-b border-white/20 shadow-lg">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur opacity-75 animate-pulse"></div>
+              <div className="relative bg-white rounded-full p-2">
+                <Image src={logo} alt="Logo" width={32} height={32} />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                EduAI StudyBuddy
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Transform your learning with AI</p>
+            </div>
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto p-4 py-8">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText />
-                Your Study Material
-              </CardTitle>
-              <CardDescription>Paste your text content below. The AI will generate a summary and a quiz to help you learn.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                placeholder="Paste your notes, article, or any text here..."
-                className="min-h-[400px] text-base resize-y"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-              />
-              <div className="text-sm text-muted-foreground mt-2 flex items-center gap-2">
-                <Pilcrow className="h-4 w-4" />
-                <span>{wordCount} words</span>
+      <main className="relative container mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl blur-lg opacity-50 animate-pulse"></div>
+              <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20">
+                <Sparkles className="h-12 w-12 text-purple-600 mx-auto animate-pulse" />
               </div>
-            </CardContent>
-            <CardFooter>
-              <Button onClick={handleGenerate} disabled={isLoading} className="w-full">
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  'Generate Study Aids'
-                )}
-              </Button>
-            </CardFooter>
+            </div>
+          </div>
+          <h2 className="text-5xl font-extrabold mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
+            Learn Smarter, Not Harder
+          </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            Paste your content and let our AI create personalized summaries and interactive quizzes to accelerate your learning journey.
+          </p>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* Input Card with enhanced styling */}
+          <Card className="relative overflow-hidden backdrop-blur-md bg-white/70 border-0 shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10"></div>
+            <div className="relative">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-2xl">
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    Your Study Material
+                  </span>
+                </CardTitle>
+                <CardDescription className="text-lg text-gray-600">
+                  Paste any text content below. Our AI will analyze it and create personalized study aids just for you.
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                <div className="relative">
+                  <Textarea
+                    placeholder="✨ Paste your notes, articles, textbook chapters, research papers, or any learning material here..."
+                    className="min-h-[300px] text-base resize-y border-2 border-purple-200 focus:border-purple-500 transition-colors duration-300 bg-white/50 backdrop-blur-sm"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                  />
+                  {text && (
+                    <div className="absolute top-3 right-3">
+                      <div className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                        <CheckCircle className="inline h-3 w-3 mr-1" />
+                        Ready to analyze
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Pilcrow className="h-4 w-4 text-purple-500" />
+                    <span className="font-medium">{wordCount} words</span>
+                    {wordCount > 0 && (
+                      <span className="text-green-600">
+                        • Perfect for analysis
+                      </span>
+                    )}
+                  </div>
+                  
+                  {wordCount > 0 && (
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star 
+                          key={star} 
+                          className={`h-4 w-4 ${wordCount > star * 50 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+              
+              <CardFooter>
+                <Button 
+                  onClick={handleGenerate} 
+                  disabled={isLoading || !text.trim()} 
+                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg transition-all duration-300 transform hover:scale-[1.02] disabled:transform-none"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>Creating your study aids...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <Zap className="h-5 w-5" />
+                      <span>Generate Study Aids</span>
+                      <ArrowRight className="h-5 w-5" />
+                    </div>
+                  )}
+                </Button>
+              </CardFooter>
+            </div>
           </Card>
 
-          <div className="space-y-4">
-            {isLoading && <ResultsSkeleton />}
+          {/* Results Section */}
+          <div className="space-y-6">
+            {isLoading && <EnhancedResultsSkeleton />}
+            
             {error && (
-              <Alert variant="destructive">
-                <Terminal className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+              <Alert variant="destructive" className="border-red-200 bg-red-50/80 backdrop-blur-sm">
+                <Terminal className="h-5 w-5" />
+                <AlertTitle className="text-lg">Oops! Something went wrong</AlertTitle>
+                <AlertDescription className="text-base">{error}</AlertDescription>
               </Alert>
             )}
+            
             {results && (
               <Tabs defaultValue="summary" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="summary"><Lightbulb className="mr-2 h-4 w-4" />Summary</TabsTrigger>
-                  <TabsTrigger value="quiz"><HelpCircle className="mr-2 h-4 w-4" />Quiz</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-white/60 backdrop-blur-md p-1 rounded-xl shadow-lg border-0">
+                  <TabsTrigger 
+                    value="summary" 
+                    className="flex items-center gap-2 text-base font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300"
+                  >
+                    <Lightbulb className="h-4 w-4" />
+                    Summary
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="quiz"
+                    className="flex items-center gap-2 text-base font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300"
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                    Quiz
+                  </TabsTrigger>
                 </TabsList>
-                <TabsContent value="summary">
-                  <Card className="shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <BookOpen />
-                        AI-Generated Summary
-                      </CardTitle>
-                      <CardDescription>A concise overview of your provided text.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="prose prose-sm max-w-none text-foreground leading-relaxed">
-                      {results.summary}
-                    </CardContent>
+                
+                <TabsContent value="summary" className="mt-6">
+                  <Card className="backdrop-blur-md bg-white/70 border-0 shadow-2xl overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-blue-500/10"></div>
+                    <div className="relative">
+                      <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b border-green-100">
+                        <CardTitle className="flex items-center gap-3 text-2xl">
+                          <div className="p-2 rounded-lg bg-gradient-to-r from-green-500 to-blue-500">
+                            <BookOpen className="h-6 w-6 text-white" />
+                          </div>
+                          <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                            AI-Generated Summary
+                          </span>
+                        </CardTitle>
+                        <CardDescription className="text-lg">
+                          Key insights and takeaways from your content • {parseSummaryBullets(results.summary).length} points
+                        </CardDescription>
+                      </CardHeader>
+
+                      {/* Make just this area scrollable */}
+                      <CardContent className="p-6 max-h-[420px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="space-y-3">
+                          {parseSummaryBullets(results.summary).map((point, index) => (
+                            <div 
+                              key={index} 
+                              className="flex gap-4 p-4 bg-gradient-to-r from-green-50/80 to-blue-50/80 rounded-lg border border-green-100/50 hover:from-green-100/80 hover:to-blue-100/80 transition-all duration-200"
+                            >
+                              <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-full flex items-center justify-center font-semibold text-sm shadow-sm">
+                                {index + 1}
+                              </div>
+                              <p className="flex-1 text-gray-700 leading-relaxed font-medium">
+                                {point}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </div>
                   </Card>
                 </TabsContent>
-                <TabsContent value="quiz">
-                  <Quiz questions={results.quiz} />
+                                
+                <TabsContent value="quiz" className="mt-6">
+                  <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                    <Quiz questions={results.quiz} />
+                  </div>
                 </TabsContent>
               </Tabs>
             )}
-             {!isLoading && !results && !error && (
-               <Card className="shadow-lg flex flex-col items-center justify-center min-h-[400px] text-center p-8">
-                  <div className="p-4 bg-secondary rounded-full mb-4">
-                     {/* <BrainCircuit className="h-12 w-12 text-primary" /> */}
-                     <Image src={logo} alt="Logo" width={100} height={100} />
+            
+            {!isLoading && !results && !error && (
+              <Card className="backdrop-blur-md bg-white/60 border-0 shadow-2xl">
+                <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
+                  <div className="relative mb-8">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur-lg opacity-50 animate-pulse"></div>
+                    <div className="relative bg-gradient-to-r from-purple-100 to-blue-100 rounded-full p-8">
+                      <Image src={logo} alt="Logo" width={80} height={80} />
+                    </div>
                   </div>
-                  <h2 className="text-xl font-bold">Your Study Aids Appear Here</h2>
-                  <p className="text-muted-foreground mt-2">
-                     Enter your text and click "Generate" to get started.
+                  <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    Your Study Aids Appear Here
+                  </h2>
+                  <p className="text-lg text-gray-600 mb-6 max-w-md">
+                    Enter your learning material and watch the magic happen. AI-powered summaries and quizzes await!
                   </p>
-               </Card>
-             )}
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <Sparkles className="h-4 w-4 text-purple-500" />
+                      <span>AI-Powered</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Zap className="h-4 w-4 text-blue-500" />
+                      <span>Lightning Fast</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 text-yellow-500" />
+                      <span>Personalized</span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            )}
           </div>
         </div>
       </main>
@@ -149,16 +320,26 @@ export default function Home() {
   );
 }
 
-const ResultsSkeleton = () => (
-  <Card className="shadow-lg">
+const EnhancedResultsSkeleton = () => (
+  <Card className="backdrop-blur-md bg-white/60 border-0 shadow-2xl">
     <CardHeader>
-      <Skeleton className="h-8 w-1/2" />
-      <Skeleton className="h-4 w-3/4" />
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-12 w-12 rounded-lg" />
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+      </div>
     </CardHeader>
     <CardContent className="space-y-4">
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-5/6" />
+      <Skeleton className="h-4 w-3/4" />
+      <div className="space-y-2 pt-4">
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-5/6" />
+        <Skeleton className="h-3 w-4/5" />
+      </div>
     </CardContent>
   </Card>
 );

@@ -28,7 +28,7 @@ const summarizeTextChunkPrompt = ai.definePrompt({
   name: 'summarizeTextChunkPrompt',
   input: {schema: SummarizeTextChunkInputSchema},
   output: {schema: SummarizeTextChunkOutputSchema},
-  prompt: `Write a detailed and comprehensive summary in 2-3 paragraphs of the following text. The summary should be at least 200–300 words and cover all key points:\n\n{{textChunk}}`,
+  prompt: `Write a detailed and comprehensive summary of the following text in 8-10 bullet points. Each bullet point should start with "• " and be on a separate line. Use clear and concise bullet points to cover all key points:\n\n{{textChunk}}`,
 });
 
 const summarizeTextChunkFlow = ai.defineFlow(
