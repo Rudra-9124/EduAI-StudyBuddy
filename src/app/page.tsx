@@ -26,11 +26,13 @@ import {
   TrendingUp,    
   Brain,         
   Bookmark,
+  XCircle, X,
 } from 'lucide-react';
 import type { GenerateQuizQuestionsOutput } from '@/ai/flows/generate-quiz-questions';
 import { Quiz } from '@/components/quiz';
 import { generateStudyAids } from '@/app/actions';
 import logo from '@/app/favicon.ico';
+import pdfToText from 'react-pdftotext'; 
 
 type StudyAids = {
   summary: string;
@@ -50,10 +52,56 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<StudyAids | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractionError, setExtractionError] = useState<string | null>(null);
+
+  const extractTextFromPDF = async (file: File): Promise<string> => {
+    try {
+      setIsExtracting(true);
+      setExtractionError(null);
+      const text = await pdfToText(file);
+      return text;
+    } catch (error) {
+      console.error('PDF extraction error:', error);
+      throw new Error('Failed to extract text from PDF. Please ensure it\'s a valid PDF file.');
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handlePDFUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      setError('Please upload a valid PDF file.');
+      return;
+    }
+
+    try {
+      setPdfFile(file);
+      setText(''); // Clear existing text
+      const extractedText = await extractTextFromPDF(file);
+      setText(extractedText);
+      setError(null);
+    } catch (error) {
+      setExtractionError(error instanceof Error ? error.message : 'PDF extraction failed');
+      setPdfFile(null);
+    }
+  };
+
+  // Add this function to clear PDF and switch to text mode
+  const clearPDF = () => {
+    setPdfFile(null);
+    setText('');
+    setError(null);
+    setExtractionError(null);
+  };
 
   const handleGenerate = async () => {
     if (!text.trim()) {
-      setError('Please enter some text to generate study aids.');
+      setError('Please enter some text or upload a PDF to generate study aids.');
       return;
     }
     setIsLoading(true);
@@ -138,12 +186,81 @@ export default function Home() {
               </CardHeader>
               
               <CardContent className="space-y-4">
+                {/* PDF Upload Section */}
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handlePDFUpload}
+                    className="hidden"
+                    id="pdf-upload"
+                    disabled={isExtracting}
+                  />
+                  
+                  <label
+                    htmlFor="pdf-upload"
+                    className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 ${
+                      isExtracting
+                        ? 'border-gray-300 bg-gray-50 cursor-not-allowed'
+                        : pdfFile
+                        ? 'border-green-400 bg-green-50 hover:bg-green-100'
+                        : 'border-purple-300 bg-purple-50 hover:bg-purple-100'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      {isExtracting ? (
+                        <>
+                          <Loader2 className="w-8 h-8 mb-3 text-purple-500 animate-spin" />
+                          <p className="text-sm text-gray-600">Extracting text from PDF...</p>
+                        </>
+                      ) : pdfFile ? (
+                        <>
+                          <CheckCircle className="w-8 h-8 mb-3 text-green-500" />
+                          <p className="text-sm font-medium text-green-700">{pdfFile.name}</p>
+                          <p className="text-xs text-green-600">Text extracted successfully</p>
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud className="w-8 h-8 mb-3 text-purple-500" />
+                          <p className="text-sm font-medium text-purple-700">Upload PDF File</p>
+                          <p className="text-xs text-purple-600">Click to browse or drag and drop</p>
+                        </>
+                      )}
+                    </div>
+                  </label>
+
+                  {pdfFile && (
+                    <button
+                      onClick={clearPDF}
+                      className="absolute top-2 right-2 p-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors"
+                      title="Remove PDF"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* OR Divider */}
+                <div className="flex items-center my-4">
+                  <div className="flex-grow border-t border-gray-300"></div>
+                  <span className="mx-4 text-sm text-gray-500 bg-white px-2">OR</span>
+                  <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+
+                {/* Text Input Area (existing) */}
                 <div className="relative">
                   <Textarea
-                    placeholder="✨ Paste your notes, articles, textbook chapters, research papers, or any learning material here..."
+                    placeholder={pdfFile ? "✨ Text extracted from your PDF appears here..." : "✨ Paste your notes, articles, textbook chapters, research papers, or any learning material here..."}
                     className="min-h-[300px] text-base resize-y border-2 border-purple-200 focus:border-purple-500 transition-colors duration-300 bg-white/50 backdrop-blur-sm"
                     value={text}
-                    onChange={(e) => setText(e.target.value)}
+                    onChange={(e) => {
+                      setText(e.target.value);
+                      if (pdfFile && e.target.value !== text) {
+                        // Clear PDF when user manually edits extracted text
+                        setPdfFile(null);
+                      }
+                    }}
+                    disabled={isExtracting}
                   />
                   {text && (
                     <div className="absolute top-3 right-3">
@@ -154,11 +271,21 @@ export default function Home() {
                     </div>
                   )}
                 </div>
+
+                {/* Error Display for PDF Extraction */}
+                {extractionError && (
+                  <Alert variant="destructive" className="border-red-200 bg-red-50">
+                    <Terminal className="h-4 w-4" />
+                    <AlertDescription>{extractionError}</AlertDescription>
+                  </Alert>
+                )}
                 
+                {/* Word Count and Stats (existing) */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Pilcrow className="h-4 w-4 text-purple-500" />
                     <span className="font-medium">{wordCount} words</span>
+                    {pdfFile && <span className="text-blue-600">• From PDF: {pdfFile.name}</span>}
                     {wordCount > 0 && (
                       <span className="text-green-600">
                         • Perfect for analysis
@@ -182,13 +309,18 @@ export default function Home() {
               <CardFooter>
                 <Button 
                   onClick={handleGenerate} 
-                  disabled={isLoading || !text.trim()} 
+                  disabled={isLoading || isExtracting || !text.trim()} 
                   className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg transition-all duration-300 transform hover:scale-[1.02] disabled:transform-none"
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-3">
                       <Loader2 className="h-5 w-5 animate-spin" />
                       <span>Creating your study aids...</span>
+                    </div>
+                  ) : isExtracting ? (
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>Extracting PDF text...</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-3">
