@@ -183,7 +183,7 @@ export default function Home() {
                 <Button 
                   onClick={handleGenerate} 
                   disabled={isLoading || !text.trim()} 
-                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg transition-all duration-300 transform hover:scale-[1.02] disabled:transform-none"
+                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg transition-all duration-300 transform hover:scale-[1.02] disabled:transform-none"
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-3">
