@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -55,6 +56,7 @@ export default function Home() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractionError, setExtractionError] = useState<string | null>(null);
+  const [model, setModel] = useState<"gemini" | "local">("gemini");
 
   const extractTextFromPDF = async (file: File): Promise<string> => {
     try {
@@ -109,7 +111,7 @@ export default function Home() {
     setResults(null);
 
     try {
-      const result = await generateStudyAids({ textContent: text });
+      const result = await generateStudyAids({ textContent: text, model });
       if (result.error) {
         setError(result.error);
       } else if (result.data) {
@@ -154,14 +156,14 @@ export default function Home() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl blur-lg opacity-50 animate-pulse"></div>
               <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20">
-                <Sparkles className="h-12 w-12 text-purple-600 mx-auto animate-pulse" />
+                <Sparkles className="h-8 w-8 text-purple-600 mx-auto animate-pulse" />
               </div>
             </div>
           </div>
-          <h2 className="text-5xl font-extrabold mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
+          <h2 className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
             Learn Smarter, Not Harder
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
             Paste your content and let our AI create personalized summaries and interactive quizzes to accelerate your learning journey.
           </p>
         </div>
@@ -303,6 +305,22 @@ export default function Home() {
                       ))}
                     </div>
                   )}
+                </div>
+
+                {/* Model Selection Dropdown */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Model
+                  </label>
+                  <Select value={model} onValueChange={(value) => setModel(value as "gemini" | "local")}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Choose a model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gemini">Gemini</SelectItem>
+                      <SelectItem value="local">Ollama (llama3.2)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
               

@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import type { GenerateQuizQuestionsOutput } from '@/ai/flows/generate-quiz-questions';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';

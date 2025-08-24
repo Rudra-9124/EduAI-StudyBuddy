@@ -1,12 +1,4 @@
 'use server';
-/**
- * @fileOverview An AI agent that summarizes a text chunk.
- *
- * - summarizeTextChunk - A function that summarizes a given text chunk.
- * - SummarizeTextChunkInput - The input type for the summarizeTextChunk function.
- * - SummarizeTextChunkOutput - The return type for the summarizeTextChunk function.
- */
-
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
