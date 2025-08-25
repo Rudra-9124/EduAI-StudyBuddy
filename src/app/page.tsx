@@ -308,7 +308,7 @@ export default function Home() {
                 </div>
 
                 {/* Model Selection Dropdown */}
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Select Model
                   </label>
@@ -321,7 +321,7 @@ export default function Home() {
                       <SelectItem value="local">Ollama (llama3.2)</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </div> */}
               </CardContent>
               
               <CardFooter>
